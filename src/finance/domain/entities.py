@@ -1,6 +1,9 @@
 from dataclasses import dataclass
 from typing import Optional
 
+from src.finance.domain.enums import CategoryType, OperationType
+
+
 @dataclass(frozen = True, slots = True)
 class BankAccount:
     id: str
@@ -10,15 +13,17 @@ class BankAccount:
 @dataclass(frozen = True, slots = True)
 class Category:
     id: str
-    #type:
+    type: CategoryType
     name: str
 
 @dataclass(frozen = True, slots = True)
 class Operation:
     id: str
-    #type
+    type: OperationType
     bank_account_id: str
     amount: float = 0.0
     description: Optional[str] = None
+
+
 
 
