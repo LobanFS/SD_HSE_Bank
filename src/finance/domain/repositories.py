@@ -1,0 +1,16 @@
+from abc import ABC, abstractmethod
+from typing import Iterable, Optional, Generic, TypeVar
+
+T = TypeVar("T")
+
+class IRepository(ABC, Generic[T]):
+    @abstractmethod
+    def add(self, obj: T) -> None: ...
+    @abstractmethod
+    def get(self, id: str) -> Optional[T]: ...
+    @abstractmethod
+    def list(self) -> Iterable[T]: ...
+    @abstractmethod
+    def update(self, obj: T) -> None: ...
+    @abstractmethod
+    def remove(self, id: str) -> None: ...
