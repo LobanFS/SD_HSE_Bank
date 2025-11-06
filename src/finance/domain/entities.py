@@ -3,7 +3,6 @@ from typing import Optional
 from datetime import date
 from src.finance.domain.enums import CategoryType, OperationType
 
-
 @dataclass(frozen = True, slots = True)
 class BankAccount:
     id: str
