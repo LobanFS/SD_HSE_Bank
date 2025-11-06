@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import Optional
-
+from datetime import date
 from src.finance.domain.enums import CategoryType, OperationType
 
 
@@ -21,7 +21,9 @@ class Operation:
     id: str
     type: OperationType
     bank_account_id: str
-    amount: float = 0.0
+    date: date
+    amount: float
+    category_id : str
     description: Optional[str] = None
 
 
