@@ -1,8 +1,12 @@
 from typing import Dict, List, Optional, Generic, TypeVar
+
+from src.finance.domain.entities import BankAccount, Category
 from src.finance.domain.protocol_interfaces import IHasID
+from src.finance.domain.repositories import IRepository
+
 T = TypeVar("T", bound = IHasID)
 
-class InMemoryRepo(Generic[T]):
+class InMemoryGenericRepo(IRepository[T], Generic[T]):
     def __init__(self):
         self._repository: Dict[str, T] = {}
 
