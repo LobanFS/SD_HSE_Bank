@@ -18,11 +18,11 @@ class EntityFactory:
         return Category(id=id, type=type, name=name)
 
     def create_operation(self, id: id, type: OperationType,
-                         bank_acccount_id: str, amount: float,
+                         bank_account_id: str, amount: float,
                          date_: date, category_id: str, description: str | None = None) -> Operation:
         if amount <= 0:
             raise ValueError("Сумма операции должна быть положительной")
-        return Operation(id=id, type=type, bank_account_id=bank_acccount_id,
+        return Operation(id=id, type=type, bank_account_id=bank_account_id,
                          amount=amount, date=date_, category_id=category_id,
                          description=description)
 
