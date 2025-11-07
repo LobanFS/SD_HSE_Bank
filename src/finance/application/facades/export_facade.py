@@ -20,7 +20,9 @@ class ExportFacade:
         self._export_all_timed = timed(recorder, "Export.All")(self._export_all_impl)
 
     def _make_visitor(self, fmt: Format) -> ExportVisitor:
-        if fmt == "csv":  return CsvExportVisitor()
+        if fmt == "csv":
+            return CsvExportVisitor()
+        raise ValueError(f"Unsupported export format: {fmt}")
 
     def _export_all_impl(self, fmt: Format, out_path: str) -> str:
         visitor = self._make_visitor(fmt)

@@ -27,12 +27,12 @@ class BaseImporter(ABC):
 
         for category in payload["categories"]:
             category = dict(category)
-            category["type"] = CategoryType[category["type"]]
+            category["type"] = CategoryType(category["type"])
             categories.append(self.factory.create_category(**category))
 
         for operation in payload["operations"]:
             operation = dict(operation)
-            operation["type"] = OperationType[operation["type"]]
+            operation["type"] = OperationType(operation["type"])
             operation["date"] = date.fromisoformat(operation["date"])
             operations.append(self.factory.create_operation(**operation))
 

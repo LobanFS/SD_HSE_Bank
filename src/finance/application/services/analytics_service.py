@@ -1,9 +1,6 @@
 from datetime import date
-from collections import defaultdict
-
 from src.finance.domain.entities import Operation
 from src.finance.domain.repositories import IRepository
-from src.finance.infrastructure.in_memory_repos.operation_repo import InMemoryOperationRepo
 from src.finance.domain.enums import OperationType
 
 class AnalyticsService:
@@ -18,16 +15,16 @@ class AnalyticsService:
             else: exp += op.amount
         return inc - exp
 
-    def by_category(self):
-        groupped = {}
-        for operation in self._operations.list():
-            if operation.type not in groupped:
-                groupped[operation.category_id] = {
-                    "income" : 0,
-                    "expense" : 0
-                }
-            if operation.type == OperationType.INCOME:
-                groupped[operation.category_id]["income"] += operation.amount
-            if operation.type == OperationType.EXPENSE:
-                groupped[operation.category_id]["expense"] += operation.amount
-        return groupped
+    def by_category(self) -> dict[str, dict[str, float]]:
+        grouped: dict[str, dict[str, float]] = {}
+
+        for op in self._operations.list():
+            if op.category_id not in grouped:
+                grouped[op.category_id] = {"income": 0.0, "expense": 0.0}
+
+            if op.type == OperationType.INCOME:
+                grouped[op.category_id]["income"] += op.amount
+            elif op.type == OperationType.EXPENSE:
+                grouped[op.category_id]["expense"] += op.amount
+
+        return grouped

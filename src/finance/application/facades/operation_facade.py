@@ -9,7 +9,7 @@ class OperationFacade:
         self._create = timed(recorder, "Create operation")(handler.handle)
 
     def create(self, id: str, type: OperationType, bank_account_id: str, date: date,
-               category_id: str, amount: float = 0.0, description: str | None = None):
+               category_id: str, amount: float, description: str | None = None):
         self._create(CreateOperation(id=id, type=type,
                                                  bank_account_id=bank_account_id,
                                                  date=date, amount=amount,

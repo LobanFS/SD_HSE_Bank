@@ -16,7 +16,6 @@ from src.finance.application.facades.export_facade import ExportFacade
 from src.finance.application.services.analytics_service import AnalyticsService
 from src.finance.infrastructure.export.csv_export_visitor import CsvExportVisitor
 
-
 class Container(containers.DeclarativeContainer):
     #синглетоны
     factory = providers.Singleton(EntityFactory)
@@ -40,8 +39,9 @@ class Container(containers.DeclarativeContainer):
     )
     create_operation_handler = providers.Factory(
         CreateOperationHandler,
-        op_repo=operation_repo,
-        acc_repo=account_repo,
+        operation_repo=operation_repo,
+        account_repo=account_repo,
+        category_repo=category_repo,
         factory=factory,
     )
 
@@ -76,15 +76,15 @@ class Container(containers.DeclarativeContainer):
     import_facade = providers.Factory(
         ImportFacade,
         factory=factory,
-        acc_repo=account_repo,
-        cat_repo=category_repo,
-        op_repo=operation_repo,
+        account_repo=account_repo,
+        category_repo=category_repo,
+        operation_repo=operation_repo,
     )
 
     export_facade = providers.Factory(
         ExportFacade,
-        acc_repo=account_repo,
-        cat_repo=category_repo,
-        op_repo=operation_repo,
+        account_repo=account_repo,
+        category_repo=category_repo,
+        operation_repo=operation_repo,
         recorder=recorder,
     )
