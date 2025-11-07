@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Any
-from src.finance.domain.factory import EntityFactory
+from src.finance.domain.factories.entity_factory import EntityFactory
 from src.finance.domain.enums import OperationType, CategoryType
 from datetime import date
 
@@ -38,7 +38,8 @@ class BaseImporter(ABC):
 
         return accounts, categories, operations
 
-    def _validate(self, payload: dict[str, Any]) -> dict[str, Any]:
+    @staticmethod
+    def _validate(payload: dict[str, Any]) -> dict[str, Any]:
         def clean(records, required: list[str]):
             valid = []
             for rec in records:

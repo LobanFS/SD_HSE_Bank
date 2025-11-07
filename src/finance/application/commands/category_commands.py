@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from src.finance.domain.factory import EntityFactory
+from src.finance.domain.factories.entity_factory import EntityFactory
 from src.finance.infrastructure.in_memory_repos.category_repo import InMemoryCategoryRepo
 from src.finance.domain.enums import CategoryType
 
