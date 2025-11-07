@@ -1,10 +1,13 @@
 from datetime import date
 from collections import defaultdict
+
+from src.finance.domain.entities import Operation
+from src.finance.domain.repositories import IRepository
 from src.finance.infrastructure.in_memory_repos.operation_repo import InMemoryOperationRepo
 from src.finance.domain.enums import OperationType
 
 class AnalyticsService:
-    def __init__(self, operation_repo: InMemoryOperationRepo):
+    def __init__(self, operation_repo: IRepository[Operation]):
         self._operations = operation_repo
 
     def diff_for_period(self, start: date, end: date) -> float:
