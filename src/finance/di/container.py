@@ -4,7 +4,7 @@ from src.finance.infrastructure.in_memory_repos.account_repo import InMemoryAcco
 from src.finance.infrastructure.in_memory_repos.category_repo import InMemoryCategoryRepo
 from src.finance.infrastructure.in_memory_repos.operation_repo import InMemoryOperationRepo
 from src.finance.application.recorders.csv_recorder import CsvRecorder
-from src.finance.application.commands.account_commands import CreateAccountHandler
+from src.finance.application.commands.account_commands import CreateAccountHandler, RenameAccountHandler, DeleteAccountHandler
 from src.finance.application.commands.category_commands import CreateCategoryHandler
 from src.finance.application.commands.operation_commands import CreateOperationHandler
 from src.finance.application.facades.account_facade import AccountFacade
@@ -14,7 +14,6 @@ from src.finance.application.facades.analytics_facade import AnalyticsFacade
 from src.finance.application.facades.import_facade import ImportFacade
 from src.finance.application.facades.export_facade import ExportFacade
 from src.finance.application.services.analytics_service import AnalyticsService
-from src.finance.infrastructure.export.csv_export_visitor import CsvExportVisitor
 
 class Container(containers.DeclarativeContainer):
     #синглетоны
@@ -31,6 +30,14 @@ class Container(containers.DeclarativeContainer):
         CreateAccountHandler,
         repo=account_repo,
         factory=factory,
+    )
+    rename_account_handler = providers.Factory(
+        RenameAccountHandler,
+        repo=account_repo,
+    )
+    delete_account_handler = providers.Factory(
+        DeleteAccountHandler,
+        repo=account_repo,
     )
     create_category_handler = providers.Factory(
         CreateCategoryHandler,
@@ -54,7 +61,9 @@ class Container(containers.DeclarativeContainer):
     # фасады
     account_facade = providers.Factory(
         AccountFacade,
-        handler=create_account_handler,
+        create_handler=create_account_handler,
+        rename_handler=rename_account_handler,
+        delete_handler=delete_account_handler,
         recorder=recorder,
     )
     category_facade = providers.Factory(
