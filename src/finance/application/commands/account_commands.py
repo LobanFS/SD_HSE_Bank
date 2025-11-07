@@ -6,7 +6,7 @@ from src.finance.infrastructure.in_memory_repos.account_repo import InMemoryAcco
 class CreateAccount:
     id: str
     name: str
-    initial_balance: float = 0.0
+    balance: float = 0.0
 
 class CreateAccountHandler:
     def __init__(self, repo: InMemoryAccountRepo, factory: EntityFactory):
@@ -14,5 +14,5 @@ class CreateAccountHandler:
         self._factory = factory
 
     def handle(self, cmd: CreateAccount) -> None:
-        account = self._factory.create_account(cmd.id, cmd.name, cmd.initial_balance)
+        account = self._factory.create_account(cmd.id, cmd.name, cmd.balance)
         self._repo.add(account)
