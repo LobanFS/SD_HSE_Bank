@@ -15,7 +15,7 @@ class CreateOperation:
     category_id: str
     description: Optional[str] = None
 
-class CreateAccountHandler:
+class CreateOperationHandler:
     def __init__(self, repo: InMemoryOperationRepo, factory: EntityFactory):
         self._repo = repo
         self._factory = factory
