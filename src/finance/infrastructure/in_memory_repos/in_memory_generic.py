@@ -1,6 +1,4 @@
 from typing import Dict, List, Optional, Generic, TypeVar
-
-from src.finance.domain.entities import BankAccount, Category
 from src.finance.domain.protocol_interfaces import IHasID
 from src.finance.domain.repositories import IRepository
 
