@@ -44,9 +44,9 @@ class DeleteCategory:
 
 class DeleteCategoryHandler:
 
-    def __init__(self, cat_repo: IRepository[Category], op_repo: IRepository[Operation]):
-        self._category_repo = cat_repo
-        self._operation_repo = op_repo
+    def __init__(self, category_repo: IRepository[Category], operation_repo: IRepository[Operation]):
+        self._category_repo = category_repo
+        self._operation_repo = operation_repo
 
     def handle(self, cmd: DeleteCategory) -> None:
         category = self._category_repo.get(cmd.id)

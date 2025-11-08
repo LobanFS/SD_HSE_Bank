@@ -5,8 +5,8 @@ from src.finance.infrastructure.in_memory_repos.category_repo import InMemoryCat
 from src.finance.infrastructure.in_memory_repos.operation_repo import InMemoryOperationRepo
 from src.finance.application.recorders.csv_recorder import CsvRecorder
 from src.finance.application.commands.account_commands import CreateAccountHandler, RenameAccountHandler, DeleteAccountHandler
-from src.finance.application.commands.category_commands import CreateCategoryHandler
-from src.finance.application.commands.operation_commands import CreateOperationHandler
+from src.finance.application.commands.category_commands import CreateCategoryHandler, RenameCategoryHandler, DeleteCategoryHandler
+from src.finance.application.commands.operation_commands import CreateOperationHandler, UpdateOperationHandler, DeleteOperationHandler
 from src.finance.application.facades.account_facade import AccountFacade
 from src.finance.application.facades.category_facade import CategoryFacade
 from src.finance.application.facades.operation_facade import OperationFacade
@@ -14,6 +14,8 @@ from src.finance.application.facades.analytics_facade import AnalyticsFacade
 from src.finance.application.facades.import_facade import ImportFacade
 from src.finance.application.facades.export_facade import ExportFacade
 from src.finance.application.services.analytics_service import AnalyticsService
+from src.finance.application.facades.query_facade import QueryFacade
+
 
 class Container(containers.DeclarativeContainer):
     #синглетоны
@@ -39,17 +41,40 @@ class Container(containers.DeclarativeContainer):
         DeleteAccountHandler,
         repo=account_repo,
     )
+
     create_category_handler = providers.Factory(
         CreateCategoryHandler,
         repo=category_repo,
         factory=factory,
     )
+    rename_category_handler = providers.Factory(
+        RenameCategoryHandler,
+        repo=category_repo,
+    )
+    delete_category_handler = providers.Factory(
+        DeleteCategoryHandler,
+        category_repo=category_repo,
+        operation_repo=operation_repo,
+    )
+
     create_operation_handler = providers.Factory(
         CreateOperationHandler,
         operation_repo=operation_repo,
         account_repo=account_repo,
         category_repo=category_repo,
         factory=factory,
+    )
+    update_operation_handler = providers.Factory(
+        UpdateOperationHandler,
+        operation_repo=operation_repo,
+        account_repo=account_repo,
+        category_repo=category_repo,
+        factory=factory,
+    )
+    delete_operation_handler = providers.Factory(
+        DeleteOperationHandler,
+        operation_repo=operation_repo,
+        account_repo=account_repo,
     )
 
     # сервисы
@@ -59,6 +84,14 @@ class Container(containers.DeclarativeContainer):
     )
 
     # фасады
+    query_facade = providers.Factory(
+        QueryFacade,
+        account_repo=account_repo,
+        category_repo=category_repo,
+        operation_repo=operation_repo,
+        recorder=recorder,
+    )
+
     account_facade = providers.Factory(
         AccountFacade,
         create_handler=create_account_handler,
@@ -68,12 +101,17 @@ class Container(containers.DeclarativeContainer):
     )
     category_facade = providers.Factory(
         CategoryFacade,
-        handler=create_category_handler,
+        create_handler=create_category_handler,
+        rename_handler=rename_category_handler,
+        delete_handler=delete_category_handler,
         recorder=recorder,
     )
+
     operation_facade = providers.Factory(
         OperationFacade,
-        handler=create_operation_handler,
+        create_handler=create_operation_handler,
+        update_handler=update_operation_handler,
+        delete_handler=delete_operation_handler,
         recorder=recorder,
     )
     analytics_facade = providers.Factory(
