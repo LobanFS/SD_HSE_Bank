@@ -46,6 +46,4 @@ class DeleteAccountHandler:
         self._repo = repo
 
     def handle(self, cmd: DeleteAccount) -> None:
-        if self._repo.get(cmd.id) is None:
-            raise ValueError(f"Account {cmd.id} not found")
         self._repo.remove(cmd.id)

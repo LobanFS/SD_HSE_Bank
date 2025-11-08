@@ -5,11 +5,8 @@ from src.UI.screens.categories import CategoriesScreen
 from src.UI.screens.operations import OperationsScreen
 from src.UI.screens.analytics import AnalyticsScreen
 from src.UI.screens.io_screen import IOScreen
-from src.finance.di.container import Container
 
 def run(container):
-    container = Container()
-
     acc = container.account_facade()
     cat = container.category_facade()
     op  = container.operation_facade()

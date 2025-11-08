@@ -18,6 +18,6 @@ class ImportFacade:
         imp = importer_for(file_path, self._factory)
         accounts, categories, operations = imp.import_data(raw)
 
-        for account in accounts:   self._acc_repo.add(account)
-        for category in categories: self._cat_repo.add(category)
-        for operation in operations: self._op_repo.add(operation)
+        for account in accounts:   self._acc_repo.safe_add(account)
+        for category in categories: self._cat_repo.safe_add(category)
+        for operation in operations: self._op_repo.safe_add(operation)

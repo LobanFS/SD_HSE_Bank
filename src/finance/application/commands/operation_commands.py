@@ -37,9 +37,6 @@ class CreateOperationHandler:
         if self._category_repo.get(cmd.category_id) is None:
             raise ValueError(f"Category {cmd.category_id} not found")
 
-        if self._operation_repo.get(cmd.id) is not None:
-            raise ValueError(f"Operation with id={cmd.id} already exists")
-
         op = self._factory.create_operation(
             id=cmd.id,
             type=cmd.type,
