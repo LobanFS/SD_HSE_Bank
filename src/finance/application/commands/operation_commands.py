@@ -1,10 +1,12 @@
 from typing import Optional
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from datetime import date
 from src.finance.domain.entities import Operation, BankAccount, Category
 from src.finance.domain.enums import OperationType
 from src.finance.domain.repositories import IRepository
 from src.finance.domain.factories.entity_factory import EntityFactory
+from src.finance.domain.errors import NotFoundError
+from src.finance.application.commands.op_common import OperationCommon
 
 @dataclass
 class CreateOperation:
@@ -16,46 +18,6 @@ class CreateOperation:
     category_id: str
     description: Optional[str] = None
 
-class CreateOperationHandler:
-    def __init__(
-        self,
-        operation_repo: IRepository[Operation],
-        account_repo: IRepository[BankAccount],
-        category_repo: IRepository[Category],
-        factory: EntityFactory,
-    ):
-        self._operation_repo = operation_repo
-        self._account_repo = account_repo
-        self._category_repo = category_repo
-        self._factory = factory
-
-    def handle(self, cmd: CreateOperation) -> None:
-        account = self._account_repo.get(cmd.bank_account_id)
-        if account is None:
-            raise ValueError(f"BankAccount {cmd.bank_account_id} not found")
-
-        category = self._category_repo.get(cmd.category_id)
-        if category is None:
-            raise ValueError(f"Category {cmd.category_id} not found")
-        if category.type.value != cmd.type.value:
-            raise ValueError("Operation type and category type must match")
-
-
-        op = self._factory.create_operation(
-            id=cmd.id,
-            type=cmd.type,
-            bank_account_id=cmd.bank_account_id,
-            amount=cmd.amount,
-            date=cmd.date,
-            category_id=cmd.category_id,
-            description=cmd.description,
-        )
-
-        self._operation_repo.add(op)
-
-        delta = cmd.amount if cmd.type == OperationType.INCOME else -cmd.amount
-        updated_account = replace(account, balance=account.balance + delta)
-        self._account_repo.update(updated_account)
 
 @dataclass(frozen=True)
 class UpdateOperation:
@@ -68,7 +30,11 @@ class UpdateOperation:
     description: str | None = None
 
 
-class UpdateOperationHandler:
+@dataclass(frozen=True)
+class DeleteOperation:
+    id: str
+
+class CreateOperationHandler(OperationCommon):
     def __init__(
         self,
         operation_repo: IRepository[Operation],
@@ -76,33 +42,41 @@ class UpdateOperationHandler:
         category_repo: IRepository[Category],
         factory: EntityFactory,
     ):
-        self._operation_repo = operation_repo
-        self._account_repo = account_repo
-        self._category_repo = category_repo
+        super().__init__(operation_repo, account_repo, category_repo)
         self._factory = factory
+    def handle(self, cmd: CreateOperation) -> None:
+        account = self._get_account(cmd.bank_account_id)
+        check = self._get_category_checked(cmd.category_id, cmd.type)
+        op = self._factory.create_operation(
+            id=cmd.id,
+            type=cmd.type,
+            bank_account_id=cmd.bank_account_id,
+            amount=cmd.amount,
+            date=cmd.date,
+            category_id=cmd.category_id,
+            description=cmd.description,
+        )
+        self._operation_repo.add(op)
+        self._apply_delta(account, self._delta(cmd.type, cmd.amount))
 
+class UpdateOperationHandler(OperationCommon):
+    def __init__(
+        self,
+        operation_repo: IRepository[Operation],
+        account_repo: IRepository[BankAccount],
+        category_repo: IRepository[Category],
+        factory: EntityFactory,
+    ):
+        super().__init__(operation_repo, account_repo, category_repo)
+        self._factory = factory
     def handle(self, cmd: UpdateOperation) -> None:
         old = self._operation_repo.get(cmd.id)
         if old is None:
-            raise ValueError(f"Operation {cmd.id} not found")
-
-        old_account = self._account_repo.get(old.bank_account_id)
-        if old_account is None:
-            raise ValueError(f"BankAccount {old.bank_account_id} not found")
-
-        new_account = self._account_repo.get(cmd.bank_account_id)
-        if new_account is None:
-            raise ValueError(f"BankAccount {cmd.bank_account_id} not found")
-
-        category = self._category_repo.get(cmd.category_id)
-        if category is None:
-            raise ValueError(f"Category {cmd.category_id} not found")
-        if category.type.value != cmd.type.value:
-            raise ValueError("Operation type and category type must match")
-
-        old_delta = old.amount if old.type == OperationType.INCOME else -old.amount
-        self._account_repo.update(replace(old_account, balance=old_account.balance - old_delta))
-
+            raise NotFoundError(f"Operation {cmd.id} not found")
+        old_acc = self._get_account(old.bank_account_id)
+        new_acc = self._get_account(cmd.bank_account_id)
+        check = self._get_category_checked(cmd.category_id, cmd.type)
+        self._apply_delta(old_acc, -self._delta(old.type, old.amount))
         new_op = self._factory.create_operation(
             id=cmd.id,
             type=cmd.type,
@@ -113,31 +87,20 @@ class UpdateOperationHandler:
             description=cmd.description,
         )
         self._operation_repo.update(new_op)
+        self._apply_delta(new_acc, self._delta(cmd.type, cmd.amount))
 
-        new_account = self._account_repo.get(cmd.bank_account_id)
-        assert new_account is not None
-        new_delta = cmd.amount if cmd.type == OperationType.INCOME else -cmd.amount
-        self._account_repo.update(replace(new_account, balance=new_account.balance + new_delta))
-
-@dataclass(frozen=True)
-class DeleteOperation:
-    id: str
-
-class DeleteOperationHandler:
-    def __init__(self, operation_repo: IRepository[Operation], account_repo: IRepository[BankAccount]):
-        self._operation_repo = operation_repo
-        self._account_repo = account_repo
+class DeleteOperationHandler(OperationCommon):
+    def __init__(
+        self,
+        operation_repo: IRepository[Operation],
+        account_repo: IRepository[BankAccount],
+    ):
+        super().__init__(operation_repo, account_repo, category_repo=None)
 
     def handle(self, cmd: DeleteOperation) -> None:
-        operation = self._operation_repo.get(cmd.id)
-        if operation is None:
-            raise ValueError(f"Operation {cmd.id} not found")
-
-        account = self._account_repo.get(operation.bank_account_id)
-        if account is None:
-            raise ValueError(f"BankAccount {operation.bank_account_id} not found")
-
-        delta = operation.amount if operation.type == OperationType.INCOME else -operation.amount
-        self._account_repo.update(replace(account, balance=account.balance - delta))
-
+        old = self._operation_repo.get(cmd.id)
+        if old is None:
+            raise NotFoundError(f"Operation {cmd.id} not found")
+        acc = self._get_account(old.bank_account_id)
+        self._apply_delta(acc, -self._delta(old.type, old.amount))
         self._operation_repo.remove(cmd.id)
