@@ -133,6 +133,7 @@ class Container(containers.DeclarativeContainer):
         account_repo=account_repo,
         category_repo=category_repo,
         operation_repo=operation_repo,
+        recorder=recorder
     )
 
     export_facade = providers.Factory(
