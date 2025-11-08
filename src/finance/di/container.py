@@ -15,18 +15,26 @@ from src.finance.application.facades.import_facade import ImportFacade
 from src.finance.application.facades.export_facade import ExportFacade
 from src.finance.application.services.analytics_service import AnalyticsService
 from src.finance.application.facades.query_facade import QueryFacade
-
+from src.finance.application.recorders.csv_recorder import CsvRecorder
+from src.finance.application.recorders.console_recorder import ConsoleRecorder
+from src.finance.application.recorders.composite_recorder import CompositeRecorder
 
 class Container(containers.DeclarativeContainer):
     #синглетоны
     factory = providers.Singleton(EntityFactory)
-    recorder = providers.Singleton(CsvRecorder, directory="data")
+    csv_recorder     = providers.Singleton(CsvRecorder, directory="data")
+    console_recorder = providers.Singleton(ConsoleRecorder)
 
     #репозитории
     account_repo = providers.Singleton(InMemoryAccountRepo)
     category_repo = providers.Singleton(InMemoryCategoryRepo)
     operation_repo = providers.Singleton(InMemoryOperationRepo)
 
+    # компоновщик
+    recorder = providers.Singleton(
+        CompositeRecorder,
+        recorders=providers.List(csv_recorder, console_recorder),
+    )
     # хендлеры
     create_account_handler = providers.Factory(
         CreateAccountHandler,
