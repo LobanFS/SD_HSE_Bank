@@ -12,7 +12,7 @@ class CreateCategory:
     name: str
 
 class CreateCategoryHandler:
-    def __init__(self, repo: InMemoryCategoryRepo, factory: EntityFactory):
+    def __init__(self, repo: IRepository[Category], factory: EntityFactory):
         self._repo = repo
         self._factory = factory
 

@@ -7,14 +7,16 @@ from src.finance.domain.visitors.base_export_visitor import ExportVisitor
 from src.finance.application.recorders.base_recorder import Recorder
 from src.finance.application.decorators.timing import timed
 from src.finance.infrastructure.export.csv_export_visitor import CsvExportVisitor
+from src.finance.domain.repositories import IRepository
+from src.finance.domain.entities import BankAccount, Category, Operation
 
 Format = Literal["csv"]
 
 class ExportFacade:
     def __init__(self,
-                 account_repo: InMemoryAccountRepo,
-                 category_repo: InMemoryCategoryRepo,
-                 operation_repo: InMemoryOperationRepo,
+                 account_repo: IRepository[BankAccount],
+                 category_repo: IRepository[Category],
+                 operation_repo: IRepository[Operation],
                  recorder: Recorder):
         self._account_repo, self._category_repo, self._operation_repo = account_repo, category_repo, operation_repo
         self._export_all_timed = timed(recorder, "Export.All")(self._export_all_impl)

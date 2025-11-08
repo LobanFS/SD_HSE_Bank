@@ -34,8 +34,12 @@ class CreateOperationHandler:
         if account is None:
             raise ValueError(f"BankAccount {cmd.bank_account_id} not found")
 
-        if self._category_repo.get(cmd.category_id) is None:
+        category = self._category_repo.get(cmd.category_id)
+        if category is None:
             raise ValueError(f"Category {cmd.category_id} not found")
+        if category.type.value != cmd.type.value:
+            raise ValueError("Operation type and category type must match")
+
 
         op = self._factory.create_operation(
             id=cmd.id,
@@ -90,8 +94,11 @@ class UpdateOperationHandler:
         if new_account is None:
             raise ValueError(f"BankAccount {cmd.bank_account_id} not found")
 
-        if self._category_repo.get(cmd.category_id) is None:
+        category = self._category_repo.get(cmd.category_id)
+        if category is None:
             raise ValueError(f"Category {cmd.category_id} not found")
+        if category.type.value != cmd.type.value:
+            raise ValueError("Operation type and category type must match")
 
         old_delta = old.amount if old.type == OperationType.INCOME else -old.amount
         self._account_repo.update(replace(old_account, balance=old_account.balance - old_delta))

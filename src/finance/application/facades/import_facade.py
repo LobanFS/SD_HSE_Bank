@@ -4,12 +4,13 @@ from src.finance.infrastructure.in_memory_repos.account_repo import InMemoryAcco
 from src.finance.infrastructure.in_memory_repos.category_repo import InMemoryCategoryRepo
 from src.finance.domain.factories.entity_factory import EntityFactory
 from src.finance.domain.factories.importer_factory import importer_for
-
+from src.finance.domain.repositories import IRepository
+from src.finance.domain.entities import BankAccount, Category, Operation
 class ImportFacade:
     def __init__(self, factory: EntityFactory,
-                 account_repo: InMemoryAccountRepo,
-                 category_repo: InMemoryCategoryRepo,
-                 operation_repo: InMemoryOperationRepo):
+                 account_repo: IRepository[BankAccount],
+                 category_repo: IRepository[Category],
+                 operation_repo: IRepository[Operation]):
         self._factory = factory
         self._acc_repo, self._cat_repo, self._op_repo = account_repo, category_repo, operation_repo
 

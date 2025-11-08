@@ -13,7 +13,7 @@ class CreateAccount:
     balance: float = 0.0
 
 class CreateAccountHandler:
-    def __init__(self, repo: InMemoryAccountRepo, factory: EntityFactory):
+    def __init__(self, repo: IRepository[BankAccount], factory: EntityFactory):
         self._repo = repo
         self._factory = factory
 
