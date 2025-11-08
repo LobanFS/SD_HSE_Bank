@@ -4,10 +4,12 @@ from src.finance.domain.visitors.base_export_visitor import ExportVisitor
 from src.finance.application.recorders.base_recorder import Recorder
 from src.finance.application.decorators.timing import timed
 from src.finance.infrastructure.export.csv_export_visitor import CsvExportVisitor
+from src.finance.infrastructure.export.json_export_visitor import JsonExportVisitor
+from src.finance.infrastructure.export.yaml_export_visitor import YamlExportVisitor
 from src.finance.domain.repositories import IRepository
 from src.finance.domain.entities import BankAccount, Category, Operation
 
-Format = Literal["csv"]
+Format = Literal["csv", "json", "yaml", "yml"]
 
 class ExportFacade:
     def __init__(self,
@@ -21,6 +23,10 @@ class ExportFacade:
     def _make_visitor(self, fmt: Format) -> ExportVisitor:
         if fmt == "csv":
             return CsvExportVisitor()
+        if fmt == "json":
+            return JsonExportVisitor()
+        if fmt == "yaml":
+            return YamlExportVisitor()
         raise ValueError(f"Unsupported export format: {fmt}")
 
     def _export_all_impl(self, fmt: Format, out_path: str) -> str:
