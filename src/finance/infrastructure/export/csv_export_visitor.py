@@ -1,4 +1,3 @@
-
 import csv, io
 from src.finance.domain.visitors.base_export_visitor import ExportVisitor
 from src.finance.domain.entities import BankAccount, Category, Operation

@@ -1,7 +1,4 @@
-from dataclasses import dataclass
 from src.finance.domain.factories.entity_factory import EntityFactory
-from src.finance.infrastructure.in_memory_repos.account_repo import InMemoryAccountRepo
-from src.finance.domain.repositories import IRepository
 from dataclasses import dataclass, replace
 from src.finance.domain.entities import BankAccount
 from src.finance.domain.repositories import IRepository

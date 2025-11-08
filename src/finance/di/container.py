@@ -3,7 +3,6 @@ from src.finance.domain.factories.entity_factory import EntityFactory
 from src.finance.infrastructure.in_memory_repos.account_repo import InMemoryAccountRepo
 from src.finance.infrastructure.in_memory_repos.category_repo import InMemoryCategoryRepo
 from src.finance.infrastructure.in_memory_repos.operation_repo import InMemoryOperationRepo
-from src.finance.application.recorders.csv_recorder import CsvRecorder
 from src.finance.application.commands.account_commands import CreateAccountHandler, RenameAccountHandler, DeleteAccountHandler
 from src.finance.application.commands.category_commands import CreateCategoryHandler, RenameCategoryHandler, DeleteCategoryHandler
 from src.finance.application.commands.operation_commands import CreateOperationHandler, UpdateOperationHandler, DeleteOperationHandler

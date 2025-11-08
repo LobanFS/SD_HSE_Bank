@@ -2,7 +2,6 @@ from src.finance.domain.entities import BankAccount, Category, Operation
 from src.finance.domain.enums import CategoryType, OperationType
 from datetime import date
 
-#делаем фабрику - синглетоном
 class EntityFactory:
     _instance = None
 
